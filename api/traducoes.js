@@ -6,6 +6,12 @@ const supabase = createClient(
 );
 
 module.exports = async (req, res) => {
+  // Verifica se a requisição tem a chave correta
+  const token = req.headers['x-api-key'];
+  if (!token || token !== process.env.API_SECRET_KEY) {
+    return res.status(403).json({ sucesso: false, erro: 'Acesso negado. Token inválido.' });
+  }
+
   const { data, error } = await supabase.from('traducoes').select('*');
 
   if (error) {
@@ -13,3 +19,4 @@ module.exports = async (req, res) => {
   }
   res.status(200).json({ sucesso: true, dados: data });
 };
+
